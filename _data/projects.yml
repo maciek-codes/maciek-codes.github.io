@@ -1,9 +1,11 @@
-- name: Conpanna
-  description: An HTTP server framework in C#.
-  url: https://github.com/maciek-codes/Conpanna
-- name: fs4f
-  description: A fake, in-memory file system, built for fun.
-  url: https://github.com/maciek-codes/fs4f
-- name: C++ testing notes
-  description: Notes on testing and mocking options in C++.
-  url: https://github.com/maciek-codes/cpp-mocking-notes
+- name: Evoke
+  description: >-
+    My Dixit-inspired online storytelling game for 3–8 players. Give a clue,
+    choose an illustrated card, and try to find the storyteller's card among
+    everyone's submissions.
+  details: >-
+    The trick is to give a clue that some friends will get, but not everyone.
+    Create a room, share the code, and play together in your browsers, with
+    real-time rounds and automatic scoring.
+  url: https://evoke.maciek.codes
+  link_text: Play Evoke

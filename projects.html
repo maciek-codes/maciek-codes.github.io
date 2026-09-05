@@ -4,13 +4,15 @@ title: Projects
 permalink: /projects/
 ---
 
-<p>A few things I've built and explored. More code lives on <a href="https://github.com/maciek-codes">my GitHub profile</a>.</p>
+<p>My current project is a storytelling game to play with friends.</p>
 
 <ul class="project-list">
   {% for project in site.data.projects %}
   <li>
-    <h2><a href="{{ project.url | escape }}">{{ project.name | escape }}</a></h2>
+    <h2>{{ project.name | escape }}</h2>
     <p>{{ project.description | escape }}</p>
+    {% if project.details %}<p>{{ project.details | escape }}</p>{% endif %}
+    <p><a href="{{ project.url | escape }}">{{ project.link_text | default: project.name | escape }}</a></p>
   </li>
   {% endfor %}
 </ul>
