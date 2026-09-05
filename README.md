@@ -21,7 +21,7 @@ Posts live in `_posts/`. Their existing `/posts/:year/:month/:title.html` URLs a
 
 ## Design and performance
 
-Local Liquid templates in `_layouts/` and `_includes/` render the site. Edit `assets/main.css` for styles: native CSS Grid, fluid type and spacing, logical properties, and automatic light/dark colors. All fonts are system fonts. The cursor is static; there is no animation, client-side JavaScript, analytics, font download, or icon library. Each page loads one stylesheet and a small SVG favicon. Jekyll still generates the RSS feed and SEO metadata at build time.
+Local Liquid templates in `_layouts/` and `_includes/` render the site. Edit `assets/main.css` for the compact, text-first layout: white background, standard underlined links, serif body text, and monospace navigation and dates. All fonts are system fonts. There is no animation, client-side JavaScript, analytics, font download, or icon library. Each page loads one stylesheet and a small SVG favicon. Jekyll generates the RSS feed and SEO metadata at build time.
 
 ## Deployment
 
