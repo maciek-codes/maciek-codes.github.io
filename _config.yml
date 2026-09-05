@@ -3,6 +3,7 @@ email: maciek@kumorek.com
 description: Software, side projects, and things I learn along the way.
 baseurl: ""
 url: "https://maciek.codes"
+timezone: America/Los_Angeles
 twitter_username: MaciekCodes
 github_username: maciek-codes
 author: Maciek Kumorek
