@@ -1,0 +1,11 @@
+---
+layout: default
+---
+<article class="post h-entry">
+  <header class="page-header">
+    <a class="back-link" href="{{ '/' | relative_url }}">← All posts</a>
+    <p class="post-meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y-%m-%d' }}</time></p>
+    <h1 class="p-name">{{ page.title | escape }}</h1>
+  </header>
+  <div class="prose e-content">{{ content }}</div>
+</article>

@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<section class="intro" aria-labelledby="hi-im-maciek">
+  {{ content }}
+</section>
+<section class="writing" aria-labelledby="writing-heading">
+  <div class="section-heading">
+    <h2 id="writing-heading">{{ page.list_title | default: 'Blog' | escape }}</h2>
+    <span class="entry-count">{{ site.posts.size }} entries</span>
+  </div>
+  <ul class="post-list">
+    {% for post in site.posts %}
+    <li class="post-entry">
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y-%m-%d' }}</time>
+      <div>
+        <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+        {% if site.show_excerpts %}<p>{{ post.excerpt | strip_html | truncatewords: 38 }}</p>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>

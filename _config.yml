@@ -7,9 +7,9 @@ twitter_username: MaciekCodes
 github_username: maciek-codes
 author: Maciek Kumorek
 
-theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
 
 header_pages:
   - about.md
@@ -19,7 +19,7 @@ header_pages:
 permalink: /posts/:year/:month/:title:output_ext
 show_excerpts: true
 
-google_analytics: G-E5LTPBQ30R
+# No analytics or third-party scripts: keep page loads small.
 
 exclude:
   - README.md

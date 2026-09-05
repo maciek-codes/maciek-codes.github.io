@@ -1,13 +1,12 @@
-<header class="site-header">
-  <div class="wrapper header-content">
-    <a class="site-title" rel="author" href="{{ '/' | relative_url }}">{{ site.title | escape }}</a>
-    <nav class="site-navigation" aria-label="Main navigation">
-      {% for path in site.header_pages %}
-        {% assign nav_page = site.pages | where: 'path', path | first %}
-        {% if nav_page.title %}
-          <a href="{{ nav_page.url | relative_url }}"{% if page.url == nav_page.url %} aria-current="page"{% endif %}>{{ nav_page.title | escape }}</a>
-        {% endif %}
-      {% endfor %}
-    </nav>
-  </div>
+<header class="site-header wrapper">
+  <a class="site-title" rel="author" href="{{ '/' | relative_url }}" aria-label="Maciek Codes home"><span aria-hidden="true">~/</span>maciek.codes</a>
+  <nav class="site-navigation" aria-label="Main navigation">
+    <a href="{{ '/' | relative_url }}"{% if page.layout == 'home' or page.layout == 'post' %} aria-current="{% if page.layout == 'home' %}page{% else %}true{% endif %}"{% endif %}>blog<span aria-hidden="true">/</span></a>
+    {% for path in site.header_pages %}
+      {% assign nav_page = site.pages | where: 'path', path | first %}
+      {% if nav_page.title %}
+        <a href="{{ nav_page.url | relative_url }}"{% if page.url == nav_page.url %} aria-current="page"{% endif %}>{{ nav_page.nav_title | default: nav_page.title | downcase | escape }}<span aria-hidden="true">/</span></a>
+      {% endif %}
+    {% endfor %}
+  </nav>
 </header>
