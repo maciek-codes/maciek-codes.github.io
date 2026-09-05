@@ -1,0 +1,33 @@
+---
+---
+
+$brand-color: #2459a6;
+$text-color: #243342;
+$background-color: #ffffff;
+$grey-color: #667580;
+$grey-color-light: #e5eaf0;
+$base-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+@import "minima";
+
+.site-header { border-top: 4px solid $brand-color; }
+.site-title { font-weight: 600; letter-spacing: -0.5px; }
+.header-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 24px; }
+.site-navigation { display: flex; gap: 20px; padding: 12px 0; }
+.site-navigation a { color: $text-color; }
+.site-navigation a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+.page-content { padding-top: 48px; }
+.home > h1 { font-size: 38px; letter-spacing: -1px; }
+.post-list-heading { margin-top: 48px; }
+.post-list > li { margin-bottom: 36px; }
+.project-list { list-style: none; margin-left: 0; }
+.project-list > li { margin: 32px 0; }
+.project-list h2 { margin-bottom: 6px; font-size: 24px; }
+a:focus-visible { outline: 2px solid $brand-color; outline-offset: 4px; }
+.post-content, .page-content { overflow-wrap: break-word; }
+pre { overflow-wrap: normal; }
+
+@media screen and (max-width: 600px) {
+  .page-content { padding-top: 32px; }
+  .home > h1 { font-size: 32px; }
+}

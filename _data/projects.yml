@@ -1,0 +1,9 @@
+- name: Conpanna
+  description: An HTTP server framework in C#.
+  url: https://github.com/maciek-codes/Conpanna
+- name: fs4f
+  description: A fake, in-memory file system, built for fun.
+  url: https://github.com/maciek-codes/fs4f
+- name: C++ testing notes
+  description: Notes on testing and mocking options in C++.
+  url: https://github.com/maciek-codes/cpp-mocking-notes
