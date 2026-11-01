@@ -11,6 +11,6 @@ gem "base64"
 gem "logger"
 
 group :jekyll_plugins do
-  gem "jekyll-feed", "~> 0.17"
+  gem "jekyll-feed", "~> 0.18"
   gem "jekyll-seo-tag", "~> 2.9"
 end
