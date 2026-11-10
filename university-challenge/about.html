@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#262651"><title>About · University Challenge</title>
+  <meta name="description" content="How this unofficial University Challenge question bank was put together, where the data comes from and what it gets wrong.">
+  <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="about.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to about</a>
+  <header class="mast"><div class="wrap mast-inner"><a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html" aria-current="page">About</a></nav>
+  </div></header>
+  <main class="wrap prose" id="main">
+    <div class="heading"><h1>How this was made</h1></div>
+    <p>This is an unofficial fan project, made for fun: a searchable bank of University Challenge questions rebuilt from episodes on YouTube, with the teams, players, brackets and some statistics around them. It has no connection to the BBC or the programme's makers.</p>
+    <p id="about-counts"></p>
+
+    <h2>From captions to questions</h2>
+    <ol>
+      <li><strong>Collect the episodes.</strong> A crawler lists episodes that fans have uploaded to YouTube and saves each one's timed captions. Where captions were missing or broken, the audio was transcribed locally with Whisper.</li>
+      <li><strong>Match uploads to broadcasts.</strong> Each upload is matched to its original air date, series and matchup using <a href="https://www.tvmaze.com/shows/4085/university-challenge" target="_blank" rel="noopener noreferrer">TVmaze</a> and <a href="https://www.blanchflower.org/uc/results.html" target="_blank" rel="noopener noreferrer">Sean Blanchflower's results archive</a>. When a match was uploaded twice, it counts once.</li>
+      <li><strong>Find the players.</strong> The teams introduce themselves at the start of each match. Those introductions give the names, hometowns and subjects; seat order and written match reports fill gaps. Photos are cropped from team stills and matched using seat order and nameplates.</li>
+      <li><strong>Pull out the questions.</strong> A language model reads each transcript and writes out every starter and bonus with its accepted answer and who buzzed. A second model checks the round type and the answer. A third pass edits each clue so it makes sense on its own.</li>
+      <li><strong>Check against the evidence.</strong> A final step matches every extracted question back to the caption lines it came from. It drops picture and music rounds that can't be played as text and keeps each question's timestamp, so every question links back to the moment it was asked.</li>
+      <li><strong>Build the site.</strong> Everything is combined into one SQLite database and the static files behind this site. It has no server or accounts. The published site counts visits with Google Analytics; use <em>Cookie settings</em> at the bottom of any page to opt out.</li>
+    </ol>
+    <p>The model calls for all <span id="about-uploads">the</span> uploads cost a few dollars in total.</p>
+
+    <h2>The hosts</h2>
+    <p>Jeremy Paxman presented University Challenge from 1994 until the 2022–23 series, the last one he recorded. Amol Rajan took over from the 2023–24 series. In this bank, <span id="about-hosts">Series 38 to 52 and the 2016 Christmas special are Paxman's, and Series 53 onwards and the Christmas specials since 2023 are Rajan's</span>. Episode pages and filters label the host, and the <a href="phrases.html">catchphrases page</a> compares how the two present.</p>
+
+    <h2>What it gets wrong</h2>
+    <ul>
+      <li>Captions mishear names and words, and models sometimes miss a clue, an attempt or a whole bonus. Each question links to its timestamp, so you can check it against the broadcast.</li>
+      <li>Who buzzed is left blank when the captions don't make it clear. Nothing is guessed.</li>
+      <li>Picture rounds and most music rounds need the screen or the audio, so they're left out. Statistics cover only the text questions that remain, not the full televised scores.</li>
+      <li>Three Series 49 uploads lose their audio partway through, so those matches are incomplete.</li>
+      <li>Older series use YouTube's automatic captions and newer ones use broadcast subtitles. That affects phrase counts and some attributions.</li>
+    </ul>
+    <p>To measure this, a second model checks a random sample of up to 150 questions from each competition against the captions. It asks whether each one stands on its own, says only what the host said and has the accepted answer. In the latest check, 98% of 2,753 sampled questions passed all three. Questions that fail are fixed or removed, and other checks run on every rebuild to catch structural problems such as cut-off clues.</p>
+    <p>If you spot a mistake, corrections go into hand-reviewed files that replace the generated questions for that episode.</p>
+
+    <h2>Credits</h2>
+    <p>University Challenge is a BBC programme. Questions, broadcasts, the name and any trademarks belong to the BBC and their respective owners. Air dates and matchups come from TVmaze (API data under <a href="https://www.tvmaze.com/api#licensing" target="_blank" rel="noopener noreferrer">CC BY-SA</a>). Scores and brackets come from Sean Blanchflower's results archive. Some rosters and photos come from <a href="https://jacksonlinewritings.blogspot.com/" target="_blank" rel="noopener noreferrer">Jack's Online Writings</a>. Composer names are based on <a href="https://openopus.org/" target="_blank" rel="noopener noreferrer">Open Opus</a>.</p>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <p><strong>An unofficial fan project, made for fun.</strong> University Challenge is a BBC programme. The name, format, broadcasts and any trademarks belong to the BBC and their respective owners; this site is not affiliated with or endorsed by them.</p>
+    <p>Questions, answers, scores and player details were extracted automatically from captions and may be incomplete or wrong. <a href="about.html">How this was made</a>. <a href="#" data-analytics-settings>Cookie settings</a></p>
+  </div></footer>
+</body>
+</html>

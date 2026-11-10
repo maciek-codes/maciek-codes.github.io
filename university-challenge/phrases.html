@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#262651"><title>Catchphrases · University Challenge</title>
+  <meta name="description" content="How often each University Challenge host says their catchphrases, episode by episode and minute by minute.">
+  <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="phrases.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to catchphrases</a>
+  <header class="mast"><div class="wrap mast-inner"><a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="stats.html">Stats</a><a href="phrases.html" aria-current="page">Catchphrases</a><a href="about.html">About</a></nav>
+  </div></header>
+  <main class="wrap" id="main">
+    <div class="heading"><h1>Bad luck!</h1><p id="phrase-scope" role="status"></p></div>
+    <p class="panel-note">Every phrase below is counted in the captions of each broadcast. Duplicate uploads count once. Captions don't say who is speaking, so a contestant saying “well done” counts too, though that's rare.</p>
+    <div class="hosts" id="hosts"></div>
+
+    <section class="phrase-section" aria-labelledby="badluck-heading">
+      <h2 id="badluck-heading">The commiseration count</h2>
+      <p>How often the host says “bad luck”, across every broadcast in the bank.</p>
+      <div class="big-number" id="badluck"></div>
+    </section>
+
+    <section class="phrase-section" aria-labelledby="matrix-heading">
+      <h2 id="matrix-heading">Who says what</h2>
+      <p>Average times per broadcast, by competition. Each row is shaded on its own scale, so compare across a row rather than down a column. The orange line marks the handover from Jeremy Paxman to Amol Rajan.</p>
+      <div class="heat-scroll" tabindex="0" aria-label="Phrase by competition table; scroll sideways for more"><table class="heat" id="matrix"></table></div>
+      <div class="heat-legend"><span>Rarest in row</span><i></i><span>Most frequent in row</span></div>
+    </section>
+
+    <section class="phrase-section" aria-labelledby="episodes-heading">
+      <h2 id="episodes-heading">Episode by episode</h2>
+      <p>Each square is one broadcast, in episode order. Darker squares mean the phrase was said more often. Select a square to open that episode's questions.</p>
+      <div class="phrase-controls"><label>Phrase <select id="episode-phrase"></select></label><span id="episode-peak" class="panel-note"></span></div>
+      <div class="heat-scroll" tabindex="0" aria-label="Episode heatmap; scroll sideways for later episodes"><table class="heat episodes" id="episode-grid"></table></div>
+      <div class="heat-legend"><span>0</span><i></i><span id="episode-max"></span></div>
+    </section>
+
+    <section class="phrase-section" aria-labelledby="minutes-heading">
+      <h2 id="minutes-heading">Minute by minute</h2>
+      <p>When in the match each phrase is said, by minute from the start of the upload. Rows are shaded on their own scale.</p>
+      <div class="phrase-controls"><label>Host <select id="minute-host"><option value="">Both hosts</option><option>Jeremy Paxman</option><option>Amol Rajan</option></select></label></div>
+      <div class="heat-scroll" tabindex="0" aria-label="Minute heatmap; scroll sideways for later minutes"><table class="heat minutes" id="minute-grid"></table></div>
+      <div class="heat-legend"><span>Quietest minute</span><i></i><span>Busiest minute</span></div>
+    </section>
+
+    <section class="phrase-section" aria-labelledby="captains-heading">
+      <h2 id="captains-heading">“Nominate…”</h2>
+      <p>On a bonus, the captain names who should answer. These captains said “nominate” most often during their own team's bonuses. Older series use automatic captions, which often miss it, so most of the leaders are from Series 53 onwards.</p>
+      <div class="phrase-controls"><label>Competition <select id="captain-competition"><option value="">All competitions</option></select></label></div>
+      <div class="stats-scroll"><table class="captain-table" id="captains"></table></div>
+    </section>
+
+    <p class="footnote">Series 49 to 52 use YouTube's automatic captions and later competitions use broadcast subtitles. Automatic captions can miss short interjections, so differences of a few per broadcast between the two hosts may partly reflect the captions. Bigger differences, like “ten points for this” against “another starter question”, are in how they present.</p>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <p><strong>An unofficial fan project, made for fun.</strong> University Challenge is a BBC programme. The name, format, broadcasts and any trademarks belong to the BBC and their respective owners; this site is not affiliated with or endorsed by them.</p>
+    <p>Questions, answers, scores and player details were extracted automatically from captions and may be incomplete or wrong. <a href="about.html">How this was made</a>. <a href="#" data-analytics-settings>Cookie settings</a></p>
+  </div></footer>
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+</body>
+</html>

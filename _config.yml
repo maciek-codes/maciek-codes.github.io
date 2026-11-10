@@ -20,7 +20,7 @@ header_pages:
 permalink: /posts/:year/:month/:title:output_ext
 show_excerpts: true
 
-# No analytics or third-party scripts: keep page loads small.
+# Google Analytics loads from assets/analytics.js; visitors can opt out via the notice or "Cookie settings".
 
 exclude:
   - README.md
