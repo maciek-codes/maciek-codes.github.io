@@ -143,4 +143,49 @@ function render(){
   }
   get("attribution").textContent=fmt(attributed)+" of "+fmt(total)+" scored attempts and passes have an identified team in this selection. Statistics cover retained text-playable questions. Duplicate uploads count once.";
 }
-select.addEventListener("change",render);get("stat-kind").addEventListener("change",render);render();
+// Answers compared loosely: drop brackets, alternatives after "or", leading articles, punctuation and case.
+function answerKey(a){ return a.toLowerCase().replace(/\(.*?\)|\[.*?\]/g,"").split(/\s+(?:or|accept)\s+|\/|;/)[0]
+  .normalize("NFKD").replace(/\p{M}/gu,"").replace(/[^a-z0-9 ]+/g," ").trim().replace(/^(?:the|a|an) /,"").replace(/\s+/g," "); }
+const guessSelect=get("guess-category");
+for(const c of [...new Set(bank.questions.map(q=>q.category))].filter(Boolean).sort())guessSelect.add(new Option(c,c));
+function renderExtras(){
+  const competition=select.value, category=guessSelect.value;
+  const qs=bank.questions.filter(q=>!competition || episodes.get(q.video_id)?.competition===competition);
+  // Asked again
+  const groups=new Map();
+  for(const q of bank.questions) if(q.rep){ if(!groups.has(q.rep))groups.set(q.rep,[]); groups.get(q.rep).push(q); }
+  const inScope=[...groups.values()].filter(g=>!competition || g.some(q=>episodes.get(q.video_id)?.competition===competition))
+    .sort((a,b)=>b.length-a.length || a[0].answer.localeCompare(b[0].answer));
+  get("repeat-summary").textContent=fmt(inScope.length)+" questions were asked more than once, covering "+fmt(inScope.reduce((s,g)=>s+g.length,0))+" appearances"+(competition?" that include "+competition:"")+".";
+  const box=get("repeat-groups");box.replaceChildren();
+  for(const g of inScope.slice(0,12)){
+    const ordered=[...g].sort((a,b)=>(episodes.get(a.video_id)?.air_date||"").localeCompare(episodes.get(b.video_id)?.air_date||""));
+    const d=el("details"),s=el("summary");s.append(el("span",ordered[0].answer),el("strong",fmt(g.length)+"×"));d.append(s);
+    for(const q of ordered){ const e=episodes.get(q.video_id); d.append(link(episodeLabel(e||{})+": "+q.question,"index.html",{video:q.video_id,at:String(q.start)})); }
+    box.append(d);
+  }
+  if(!inScope.length)box.append(el("p","No repeats in this selection."));
+  // Blind guesses: with no category chosen, the single most common answer in each category; otherwise that category's top answers.
+  const odds=(n,total)=>"1 in "+fmt(Math.round(total/n));
+  const tally=pool=>{ const counts=new Map(), label=new Map();
+    for(const q of pool){ const k=answerKey(q.answer); if(!k)continue; add(counts,k); if(!label.has(k))label.set(k,q.answer.replace(/\s*\(.*?\)/g,"")); }
+    return {top:sorted(counts),label}; };
+  const list=get("guesses");list.replaceChildren();
+  let rows;
+  if(category){
+    const pool=qs.filter(q=>q.category===category), t=tally(pool);
+    rows=t.top.slice(0,12).map(([k,n])=>({name:t.label.get(k),n,total:pool.length,category}));
+  } else {
+    const byCat=new Map(); for(const q of qs){ if(!byCat.has(q.category))byCat.set(q.category,[]); byCat.get(q.category).push(q); }
+    rows=[...byCat].filter(([,pool])=>pool.length>=50).map(([c,pool])=>{ const t=tally(pool),[k,n]=t.top[0]||[]; return k&&{name:t.label.get(k),n,total:pool.length,category:c,tag:c}; })
+      .filter(Boolean).sort((a,b)=>b.n/b.total-a.n/a.total);
+  }
+  const best=rows.length?Math.max(...rows.map(r=>r.n/r.total)):1;
+  for(const r of rows){
+    const li=el("li"),bar=el("div","","bar-track"),fill=el("i");fill.style.width=(100*(r.n/r.total)/best)+"%";bar.append(fill);
+    const a=link((r.tag?r.tag+": ":"")+"“"+r.name+"”","index.html",{q:r.name,category:r.category,competition});
+    li.append(a,el("span",odds(r.n,r.total)+" ("+fmt(r.n)+")"),bar);list.append(li);
+  }
+  if(!rows.length)list.append(el("li","No questions in this selection."));
+}
+select.addEventListener("change",()=>{render();renderExtras();});get("stat-kind").addEventListener("change",render);guessSelect.addEventListener("change",renderExtras);render();renderExtras();

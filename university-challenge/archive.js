@@ -6,7 +6,7 @@ const number = new Intl.NumberFormat("en-GB");
 const date = new Intl.DateTimeFormat("en-GB", {
   day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
 });
-const state = { episodes: new Map(), questions: [], matches: [], index: 0, page: 0 };
+const state = { episodes: new Map(), questions: [], byRepeat: new Map(), matches: [], index: 0, page: 0 };
 
 function text(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -95,11 +95,35 @@ function showAttempts(attempts) {
   }
 }
 
+// Other broadcasts that asked for the same answer with closely matching clues (uc/similar.py).
+function showRepeats(clue) {
+  const box = get("repeats");
+  box.replaceChildren();
+  const others = clue.rep ? (state.byRepeat.get(clue.rep) || []).filter(q => q !== clue) : [];
+  box.hidden = !others.length;
+  if (!others.length) return;
+  const head = document.createElement("p");
+  head.textContent = "This or a very similar question came up " + (others.length + 1) + " times. Also in:";
+  const list = document.createElement("ul");
+  for (const q of others) {
+    const e = state.episodes.get(q.video_id), li = document.createElement("li"), a = document.createElement("a");
+    const u = new URL("index.html", location.href);
+    u.searchParams.set("video", q.video_id); u.searchParams.set("at", String(q.start));
+    a.href = u.href;
+    a.textContent = [seriesEpisode(e), airDate(e?.air_date)].filter(Boolean).join(" · ");
+    a.title = q.question;
+    li.append(a); list.append(li);
+  }
+  box.append(head, list);
+}
+
 function renderQuestion() {
   const clue = state.matches[state.index];
   if (!clue) return;
   const episode = state.episodes.get(clue.video_id);
   get("active-question").textContent = clue.question;
+  get("set-intro").hidden = !clue.set_intro;
+  get("set-intro").textContent = clue.set_intro ? "From the set: " + clue.set_intro : "";
   get("answer").textContent = clue.answer;
   get("clue-info").textContent = [capitalize(text(clue.kind)), text(clue.category)].filter(Boolean).join(" / ");
   const info = get("episode-info");
@@ -137,6 +161,7 @@ function renderQuestion() {
     source.href = url.href;
   }
   showAttempts(clue.attempts);
+  showRepeats(clue);
   showAnswer(false);
   get("next-question").disabled = get("shuffle").disabled = state.matches.length < 2;
 }
@@ -263,6 +288,11 @@ async function loadBank() {
     const search = searchable([q.question, q.answer, q.category, q.kind, e?.title, seriesEpisode(e), teams].join(" "));
     return { ...q, search };
   });
+  state.byRepeat = new Map();
+  for (const q of state.questions) if (q.rep) {
+    if (!state.byRepeat.has(q.rep)) state.byRepeat.set(q.rep, []);
+    state.byRepeat.get(q.rep).push(q);
+  }
   const episodes = episodesInBank();
   const series = [...new Set(episodes.map(competition).filter(Boolean))]
     .sort((a, b) => b.localeCompare(a, "en", { numeric: true }));
@@ -281,6 +311,7 @@ async function loadBank() {
   }
   fillEpisodes();
   if(state.episodes.has(params.get("video")))get("episode").value=params.get("video");
+  if(params.get("q"))get("query").value=params.get("q");
   get("loading").hidden = true;
   get("workspace").hidden = false;
   applyFilters();
