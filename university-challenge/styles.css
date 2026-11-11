@@ -330,3 +330,26 @@ body.christmas .series-only, body:not(.christmas) .christmas-only { display:none
 .team-stats td.lead::before { content: "▲ "; font-size: 10px; color: var(--apricot); }
 .team-stats tr.total th, .team-stats tr.total td { font-weight: 650; border-top: 2px solid var(--line); }
 .team-stats .muted { color: var(--muted); font-weight: 400; font-size: 12px; }
+.league-check { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+.league-section { margin-top: 30px; }
+.league-section h2 { font: 500 clamp(25px,3vw,36px)/1.15 "DM Serif Text",Georgia,serif; letter-spacing: -.035em; margin: 0 0 8px; }
+.league-section > p { font-size: 14px; color: var(--muted); max-width: 74ch; }
+.league-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+.league-table th, .league-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; text-align: left; }
+.league-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.league-table .rank { width: 2.5em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.league-table thead th { font-size: 12px; color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--line); }
+.league-table thead button.sort { all: unset; cursor: pointer; }
+.league-table thead button.sort:focus-visible { outline: 3px solid #966117; outline-offset: 2px; }
+.league-table tbody th { font-weight: 600; }
+.league-table tbody tr:hover { background: #eef0f7; }
+.league-table tr.champion th, .league-table tr.champion td { background: #fff3ec; }
+.league-table td.pos { color: #22663f; } .league-table td.neg { color: #a33a2c; }
+.league-table .stars { color: #c46a43; letter-spacing: 1px; font-size: 12px; }
+.records { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 12px 0 0; font-size: 14px; }
+.records dt { color: var(--muted); font-weight: 600; }
+.records dd { margin: 0; min-width: 0; }
+.records strong { color: var(--indigo); margin-right: 4px; }
+@media (max-width: 540px) { .records { grid-template-columns: 1fr; } .records dd { margin-bottom: 6px; } }
+.stat-controls .league-check input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; accent-color: var(--indigo); }
+.stat-controls .league-check { flex-direction: row; }

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#262651"><title>League · University Challenge</title>
+  <meta name="description" content="All-time and season league tables for University Challenge: wins, points for and against, point difference and records.">
+  <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="league.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to league tables</a>
+  <header class="mast"><div class="wrap mast-inner"><a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html" aria-current="page">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  </div></header>
+  <main class="wrap" id="main">
+    <div class="heading"><h1>The league</h1><p id="league-scope" role="status"></p></div>
+    <div class="stat-controls">
+      <label>Table <select id="league-view"></select></label>
+      <label class="league-check"><input type="checkbox" id="league-xmas"> Include Christmas specials</label>
+    </div>
+    <p id="league-note" class="panel-note"></p>
+
+    <section class="league-section" aria-labelledby="table-heading">
+      <h2 id="table-heading">Standings</h2>
+      <p id="table-blurb"></p>
+      <div class="stats-scroll" tabindex="0" aria-label="League table; scroll sideways for more columns"><table class="league-table" id="league-table"></table></div>
+    </section>
+
+    <div class="stat-panels">
+      <section class="league-section"><h2>Best single-season sides</h2>
+        <p>Teams ranked by average winning margin across a whole competition, with at least three matches. Point difference per match rewards dominance over a short run.</p>
+        <ol id="best-sides" class="bars"></ol></section>
+      <section class="league-section"><h2>Records</h2>
+        <p id="records-blurb">Single matches, for the table shown above. Select one to open its questions.</p>
+        <dl id="records" class="records"></dl></section>
+    </div>
+    <p class="footnote">Scores, rounds and qualifiers come from Sean Blanchflower's results archive, so they cover every match in each competition, including any missing from the question bank. Wins and losses count matches as played on the night; tie-breaks count as wins. In Series 38 (2008–09) Corpus Christi, Oxford won the final but were disqualified because a team member had left the college, and the title was awarded to Manchester.</p>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <p><strong>An unofficial fan project, made for fun.</strong> University Challenge is a BBC programme. The name, format, broadcasts and any trademarks belong to the BBC and their respective owners; this site is not affiliated with or endorsed by them.</p>
+    <p>Questions, answers, scores and player details were extracted automatically from captions and may be incomplete or wrong. <a href="about.html">How this was made</a>. <a href="#" data-analytics-settings>Cookie settings</a></p>
+  </div></footer>
+</body>
+</html>
