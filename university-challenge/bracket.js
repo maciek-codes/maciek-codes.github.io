@@ -6,6 +6,8 @@ const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", t
 const params = new URLSearchParams(location.search);
 const SVG = "http://www.w3.org/2000/svg";
 let active = null;
+const narrow = matchMedia("(max-width: 650px)");
+let view = ["bracket", "rounds"].includes(params.get("view")) ? params.get("view") : narrow.matches ? "rounds" : "bracket";
 
 function el(tag, text, cls) { const n = document.createElement(tag); if (text) n.textContent = text; if (cls) n.className = cls; return n; }
 function href(page, data) { return page + "?" + new URLSearchParams(Object.entries(data).filter(([, v]) => v != null && v !== "")); }
@@ -85,13 +87,30 @@ function card(m, competition) {
 
 function highlight(team) {
   active = team;
-  const root = get("bracket");
-  root.classList.toggle("focused", Boolean(team));
-  for (const n of root.querySelectorAll("[data-team]")) n.classList.toggle("on", n.dataset.team === team);
+  for (const root of [get("bracket"), get("rounds")]) {
+    root.classList.toggle("focused", Boolean(team));
+    for (const n of root.querySelectorAll("[data-team]")) n.classList.toggle("on", n.dataset.team === team);
+  }
+  // In the round list, following a team keeps only its matches.
+  for (const m of get("rounds").querySelectorAll(".match")) m.hidden = Boolean(team) && !m.querySelector(".side.on");
+  for (const s of get("rounds").querySelectorAll(".round-list")) s.hidden = Boolean(team) && !s.querySelector(".match:not([hidden])");
+  const following = get("following");
+  following.hidden = !team;
+  following.firstElementChild.textContent = team ? "Following " + team + "." : "";
+}
+
+function setView(next, user) {
+  view = next;
+  get("bracket-view").hidden = view !== "bracket";
+  get("rounds-view").hidden = view !== "rounds";
+  for (const b of document.querySelectorAll(".view-switch button")) b.setAttribute("aria-pressed", String(b.dataset.view === view));
+  if (user) history.replaceState(null, "", href("bracket.html", { competition: get("bracket-competition").value, view }));
+  if (view === "bracket") requestAnimationFrame(connect);
 }
 
 function connect() {
   const root = get("bracket");
+  if (view !== "bracket") return;
   root.querySelector("svg")?.remove();
   const box = root.getBoundingClientRect();
   const svg = document.createElementNS(SVG, "svg");
@@ -120,10 +139,10 @@ function connect() {
 function render() {
   const competition = get("bracket-competition").value;
   const record = brackets[competition];
-  const root = get("bracket");
-  root.replaceChildren();
+  const root = get("bracket"), list = get("rounds"), jump = get("round-jump");
+  root.replaceChildren(); list.replaceChildren(); jump.replaceChildren();
   active = null;
-  if (!record) { root.append(el("p", "No results are available for this competition.")); return; }
+  if (!record) { root.append(el("p", "No results are available for this competition.")); list.append(el("p", "No results are available for this competition.")); highlight(null); return; }
   const cols = columns(record);
   arrange(cols);
   const tallest = Math.max(...cols.map(c => c.matches.length));
@@ -138,6 +157,25 @@ function render() {
     round.append(head, body);
     root.append(round);
   }
+  // Round list: the same matches in broadcast order, one section per round.
+  cols.forEach((c, i) => {
+    const id = "round-" + (i + 1);
+    const section = el("section", "", "round-list");
+    section.id = id;
+    const head = el("header", "", "round-head");
+    head.append(el("h2", c.title));
+    if (c.subtitle) head.append(el("small", c.subtitle));
+    const grid = el("div", "", "round-grid");
+    const ordered = [...c.matches].sort((a, b) => (a.episode ?? 1e9) - (b.episode ?? 1e9) || (a.date || "").localeCompare(b.date || ""));
+    for (const m of ordered) grid.append(card({ ...m, stage: c.title }, competition));
+    section.append(head, grid);
+    list.append(section);
+    const short = c.title === "Quarter-finals" && c.subtitle ? "QF " + ["1", "2", "3"][cols.slice(0, i).filter(x => x.title === "Quarter-finals").length] : c.title;
+    const a = el("a", short + " (" + c.matches.length + ")");
+    a.href = "#" + id;
+    jump.append(a);
+  });
+  highlight(null);
   const matches = record.stages.flatMap(s => s.matches);
   const linked = matches.filter(m => m.video).length;
   const final = record.stages.find(s => s.name === "Final")?.matches[0];
@@ -161,7 +199,10 @@ const hostOf = new Map((bank.episodes || []).map(e => [e.competition, e.host]));
 for (const name of names) select.add(new Option(hostOf.get(name) ? name + " · " + hostOf.get(name) : name, name));
 const preferred = params.get("competition");
 select.value = names.includes(preferred) ? preferred : names.find(n => brackets[n].stages.some(s => s.name === "Final")) || names[0];
-select.addEventListener("change", () => { history.replaceState(null, "", href("bracket.html", { competition: select.value })); render(); });
+select.addEventListener("change", () => { history.replaceState(null, "", href("bracket.html", { competition: select.value, view: params.has("view") || view !== (narrow.matches ? "rounds" : "bracket") ? view : null })); render(); });
+for (const b of document.querySelectorAll(".view-switch button")) b.addEventListener("click", () => setView(b.dataset.view, true));
+get("following").querySelector("button").addEventListener("click", () => highlight(null));
+setView(view);
 let timer;
 addEventListener("resize", () => { clearTimeout(timer); timer = setTimeout(connect, 120); });
 render();

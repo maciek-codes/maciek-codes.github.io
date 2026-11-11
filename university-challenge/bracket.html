@@ -28,8 +28,17 @@
       </ul>
     </div>
     <p id="bracket-note" class="panel-note"></p>
-    <div class="bracket-scroll" tabindex="0" aria-label="Bracket; scroll sideways for later rounds">
+    <div class="view-switch" role="group" aria-label="Layout">
+      <button type="button" data-view="bracket" aria-pressed="true">Bracket</button>
+      <button type="button" data-view="rounds" aria-pressed="false">By round</button>
+    </div>
+    <div id="bracket-view" class="bracket-scroll" tabindex="0" aria-label="Bracket; scroll sideways for later rounds">
       <div id="bracket" class="bracket"></div>
+    </div>
+    <div id="rounds-view" hidden>
+      <nav id="round-jump" class="round-jump" aria-label="Rounds"></nav>
+      <p id="following" class="following" role="status" hidden><span></span> <button type="button">Show all matches</button></p>
+      <div id="rounds" class="rounds"></div>
     </div>
     <p class="footnote" id="bracket-source"></p>
   </main>

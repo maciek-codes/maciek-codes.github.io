@@ -353,3 +353,19 @@ body.christmas .series-only, body:not(.christmas) .christmas-only { display:none
 @media (max-width: 540px) { .records { grid-template-columns: 1fr; } .records dd { margin-bottom: 6px; } }
 .stat-controls .league-check input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; accent-color: var(--indigo); }
 .stat-controls .league-check { flex-direction: row; }
+
+/* Bracket: layout switch and round-by-round list for narrow screens */
+.view-switch { display:inline-flex; margin-top:18px; border:1px solid var(--line); border-radius:8px; padding:2px; background:#fff; }
+.view-switch button { border:0; background:none; padding:5px 14px; border-radius:6px; font-size:14px; font-weight:650; color:var(--muted); }
+.view-switch button[aria-pressed="true"] { background:var(--indigo); color:#fff; }
+#rounds-view { margin-top:14px; border-top:1px solid var(--line); }
+.round-jump { position:sticky; top:0; z-index:2; display:flex; gap:6px; overflow-x:auto; padding:10px 0; background:var(--paper); scrollbar-width:none; }
+.round-jump a { flex:none; padding:4px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; text-decoration:none; white-space:nowrap; }
+.round-jump a:hover { border-color:var(--indigo); }
+.round-list { scroll-margin-top:52px; margin-top:10px; }
+.round-list .round-head { min-height:0; margin-bottom:8px; }
+.round-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr)); gap:8px; }
+.round-grid .match { font-size:14px; }
+.round-grid .side .team-name { font-size:14px; padding:3px 0; }
+.following { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin:4px 0 0; padding:8px 12px; border-radius:8px; background:#e6e7f8; font-size:14px; }
+.following button { border:0; background:none; padding:0; text-decoration:underline; text-underline-offset:3px; color:var(--indigo); font-weight:650; }
