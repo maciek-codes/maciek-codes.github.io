@@ -108,8 +108,24 @@ function statsTable(players, key) {
   return box;
 }
 
+// Keep the address bar pointing at what is shown, so it can be shared.
+function syncUrl() {
+  const u = new URL(location.href);
+  const text = query.value.trim();
+  u.search = "?" + new URLSearchParams(text ? { q: text } : missing ? { competition: competition.value, team: missing } : { competition: competition.value, team: team.value });
+  if (u.href !== location.href) history.replaceState(null, "", u);
+}
+
+// A linked team with no roster in the bank. Shown as a message rather than silently swapping in another team.
+let missing = "";
+
 function render() {
   list.replaceChildren();
+  syncUrl();
+  if (missing && !query.value.trim()) {
+    list.append(element("p", "No roster is available for " + missing + " in " + competition.value + "."));
+    return;
+  }
   const text = searchKey(query.value.trim());
   const matches = text ? roster.filter(p => searchKey([p.name,p.team,p.subject,p.hometown,...(p.origins||[]).map(o=>o.place)].filter(Boolean).join(" ")).includes(text))
     : roster.filter(p => p.competition === competition.value && p.team === team.value);
@@ -137,14 +153,18 @@ function render() {
 function updateTeams(preferred) {
   const teams = [...new Set(roster.filter(p => p.competition === competition.value).map(p => p.team))].sort();
   options(team, teams, preferred);
+  missing = preferred && !teams.includes(preferred) ? preferred : "";
   render();
 }
 const competitions = [...new Set(roster.map(p => p.competition))].sort((a,b)=>b.localeCompare(a, "en", {numeric:true}));
-options(competition, competitions, params.get("competition") || "Series 56");
-updateTeams(params.get("team") || "St John's, Cambridge");
+// ?team= alone opens that team's most recent competition.
+const linkedTeam = params.get("team");
+const linkedCompetition = params.get("competition") || (linkedTeam && competitions.find(c => roster.some(p => p.competition === c && p.team === linkedTeam)));
+options(competition, competitions, linkedCompetition || competitions[0]);
+updateTeams(linkedTeam || (params.has("competition") ? "" : "St John's, Cambridge"));
 if (params.get("q")) { query.value = params.get("q"); render(); }
 field("roster-count").textContent = new Intl.NumberFormat("en-GB").format(roster.length) + " player records across " + competitions.length + " competitions";
 query.addEventListener("input", render);
 competition.addEventListener("change", () => updateTeams(""));
-team.addEventListener("change", render);
+team.addEventListener("change", () => { missing = ""; render(); });
 document.querySelector("form").addEventListener("submit", event => event.preventDefault());

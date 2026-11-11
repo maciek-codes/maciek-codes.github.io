@@ -6,7 +6,9 @@ const number = new Intl.NumberFormat("en-GB");
 const date = new Intl.DateTimeFormat("en-GB", {
   day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
 });
-const state = { episodes: new Map(), questions: [], byRepeat: new Map(), matches: [], index: 0, page: 0 };
+const state = { episodes: new Map(), questions: [], byKey: new Map(), byRepeat: new Map(), matches: [], index: 0, page: 0, picked: false };
+// URL parameter <-> filter control.
+const FILTER_PARAMS = [["series", "competition"], ["episode", "video"], ["kind", "kind"], ["category", "category"], ["query", "q"]];
 
 function text(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -107,14 +109,46 @@ function showRepeats(clue) {
   const list = document.createElement("ul");
   for (const q of others) {
     const e = state.episodes.get(q.video_id), li = document.createElement("li"), a = document.createElement("a");
-    const u = new URL("index.html", location.href);
-    u.searchParams.set("video", q.video_id); u.searchParams.set("at", String(q.start));
-    a.href = u.href;
+    a.href = questionUrl(q);
     a.textContent = [seriesEpisode(e), airDate(e?.air_date)].filter(Boolean).join(" · ");
     a.title = q.question;
     li.append(a); list.append(li);
   }
   box.append(head, list);
+}
+
+// A link that opens exactly this question, whatever filters are in place.
+function questionUrl(clue) {
+  const u = new URL("index.html", location.href);
+  u.search = "";
+  u.searchParams.set("question", clue.key);
+  return u.href;
+}
+
+// Keep the address bar shareable: current filters, plus the question once the reader has picked one.
+function syncUrl() {
+  const u = new URL(location.href);
+  u.search = "";
+  for (const [id, param] of FILTER_PARAMS) {
+    const value = get(id).value.trim();
+    if (value) u.searchParams.set(param, value);
+  }
+  const clue = state.matches[state.index];
+  if (clue && state.picked) u.searchParams.set("question", clue.key);
+  if (u.href !== location.href) history.replaceState(null, "", u);
+}
+
+function teamLinks(episode) {
+  if (!Array.isArray(episode?.teams) || episode.teams.length !== 2 || !competition(episode)) return [episodeName(episode)];
+  const parts = [];
+  episode.teams.map(text).forEach((name, i) => {
+    if (i) parts.push(" v ");
+    const a = document.createElement("a");
+    a.href = "teams.html?" + new URLSearchParams({ competition: competition(episode), team: name });
+    a.textContent = name;
+    parts.push(a);
+  });
+  return parts;
 }
 
 function renderQuestion() {
@@ -127,7 +161,9 @@ function renderQuestion() {
   get("answer").textContent = clue.answer;
   get("clue-info").textContent = [capitalize(text(clue.kind)), text(clue.category)].filter(Boolean).join(" / ");
   const info = get("episode-info");
-  info.textContent = [seriesEpisode(episode), episodeName(episode)].filter(Boolean).join(" · ");
+  info.replaceChildren();
+  if (seriesEpisode(episode)) info.append(seriesEpisode(episode), " · ");
+  info.append(...teamLinks(episode));
   if (episode?.host) { const tag = document.createElement("span"); tag.className = "host-tag"; tag.textContent = "Hosted by " + episode.host; info.append(" ", tag); }
   const dateLabel = airDate(episode?.air_date);
   if (dateLabel) {
@@ -160,6 +196,8 @@ function renderQuestion() {
     source.textContent = timed ? "Watch at " + timestamp(clue.start) + (part && episode.parts.length > 1 ? " (part " + (episode.parts.indexOf(part) + 1) + ")" : "") + " ↗" : "Watch episode ↗";
     source.href = url.href;
   }
+  get("permalink").href = questionUrl(clue);
+  get("permalink").textContent = "Copy link";
   showAttempts(clue.attempts);
   showRepeats(clue);
   showAnswer(false);
@@ -167,11 +205,13 @@ function renderQuestion() {
   get("shuffle").disabled = state.questions.length < 2;
 }
 
-function selectQuestion(index, focus = false) {
+function selectQuestion(index, focus = false, picked = true) {
   state.index = index;
+  state.picked = picked;
   state.page = Math.floor(index / PAGE_SIZE);
   renderQuestion();
   renderPage();
+  syncUrl();
   if (focus) {
     get("active-question").focus({ preventScroll: true });
     get("desk").scrollIntoView({ block: "start" });
@@ -275,7 +315,8 @@ function applyFilters() {
   ));
   get("empty").hidden = Boolean(state.matches.length);
   get("results").hidden = !state.matches.length;
-  if (state.matches.length) selectQuestion(0);
+  if (state.matches.length) selectQuestion(0, false, false);
+  else { state.picked = false; syncUrl(); }
   renderStats();
 }
 
@@ -289,6 +330,15 @@ async function loadBank() {
     const search = searchable([q.question, q.answer, q.category, q.kind, e?.title, seriesEpisode(e), teams].join(" "));
     return { ...q, search };
   });
+  // Question keys survive rebuilds: video, cue start, and order among questions that share that start.
+  state.byKey = new Map();
+  for (const q of state.questions) {
+    const base = q.video_id + "_" + q.start;
+    let key = base;
+    for (let n = 1; state.byKey.has(key); n++) key = base + "_" + n;
+    q.key = key;
+    state.byKey.set(key, q);
+  }
   state.byRepeat = new Map();
   for (const q of state.questions) if (q.rep) {
     if (!state.byRepeat.has(q.rep)) state.byRepeat.set(q.rep, []);
@@ -306,7 +356,7 @@ async function loadBank() {
   get("total").textContent = number.format(state.questions.length) + (state.questions.length === 1 ? " question from " : " questions from ")
     + number.format(episodes.length) + (episodes.length === 1 ? " episode" : " episodes");
   const params=new URLSearchParams(location.search);
-  for(const [key,param] of [["series","competition"],["kind","kind"],["category","category"]]) {
+  for(const [key,param] of FILTER_PARAMS.filter(([id]) => get(id).tagName === "SELECT" && id !== "episode")) {
     const v=params.get(param);
     if(v && [...get(key).options].some(o=>o.value===v)) get(key).value=v;
   }
@@ -316,9 +366,18 @@ async function loadBank() {
   get("loading").hidden = true;
   get("workspace").hidden = false;
   applyFilters();
-  if(params.has("at") && params.has("video")) {
-    const i=state.matches.findIndex(q=>q.video_id===params.get("video") && q.start===Number(params.get("at")));
-    if(i>=0)selectQuestion(i);
+  // ?question=<key>, or the older ?video=<id>&at=<seconds>.
+  const wanted = state.byKey.get(params.get("question"))
+    || (params.has("at") ? state.questions.find(q => q.video_id === params.get("video") && q.start === Number(params.get("at"))) : null);
+  if (wanted) {
+    if (!state.matches.includes(wanted)) {
+      // The other parameters exclude it: show it within its own episode instead.
+      get("filters").reset();
+      fillEpisodes();
+      get("episode").value = wanted.video_id;
+      applyFilters();
+    }
+    selectQuestion(state.matches.indexOf(wanted));
   }
 }
 
@@ -334,6 +393,13 @@ get("reset").addEventListener("click", () => {
   fillEpisodes();
   applyFilters();
   get("query").focus();
+});
+get("permalink").addEventListener("click", event => {
+  const link = event.currentTarget;
+  if (!navigator.clipboard || event.metaKey || event.ctrlKey || event.shiftKey) return;
+  event.preventDefault();
+  navigator.clipboard.writeText(link.href).then(() => { link.textContent = "Link copied"; },
+    () => { location.href = link.href; });
 });
 get("reveal").addEventListener("click", () => showAnswer(get("answer-panel").hidden));
 // Random question draws from the whole bank: clear any filters first, then pick a different question.
