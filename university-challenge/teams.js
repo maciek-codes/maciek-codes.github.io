@@ -1,5 +1,7 @@
 "use strict";
 const roster = Array.isArray(globalThis.teamRosters) ? globalThis.teamRosters : [];
+const teamStats = globalThis.teamStats || {};
+const fmt = n => new Intl.NumberFormat("en-GB").format(n);
 const field = id => document.getElementById(id);
 const query = field("player-query");
 const competition = field("competition");
@@ -69,6 +71,43 @@ function playerCard(player) {
   card.append(sources);
   return card;
 }
+// Buzzer table for one team: named players first, then the whole team including buzzes nobody was named for.
+function statsTable(players, key) {
+  const t = teamStats[key];
+  if (!t || !t.buzzes) return null;
+  const cols = [["starters", "Starters won"], ["buzzes", "Buzzes"], ["wrong", "Wrong buzzes"], ["penalties", "Lost 5 points"]];
+  const rows = players.map(p => ({ p, s: p.stats || { buzzes: 0, starters: 0, wrong: 0, penalties: 0 } }));
+  const best = Object.fromEntries(cols.map(([k]) => [k, Math.max(0, ...rows.map(r => r.s[k]))]));
+  const box = element("div", "", "team-stats");
+  box.append(element("h3", "Buzzer stats"));
+  const scroll = element("div", "", "stats-scroll"), table = element("table");
+  const head = element("tr"); head.append(element("th", "Player"));
+  for (const [, label] of cols) { const th = element("th", label); th.scope = "col"; head.append(th); }
+  table.createTHead().append(head);
+  const body = table.createTBody();
+  for (const { p, s } of rows.sort((a, b) => b.s.starters - a.s.starters || b.s.buzzes - a.s.buzzes)) {
+    const tr = element("tr"), name = element("th"); name.scope = "row";
+    const a = element("a", p.name); a.href = "player.html?" + new URLSearchParams({ competition: p.competition, team: p.team, name: p.name });
+    name.append(a); if (p.captain) name.append(element("span", " (captain)", "muted"));
+    tr.append(name);
+    for (const [k] of cols) {
+      const td = element("td", fmt(s[k]));
+      if (best[k] > 0 && s[k] === best[k]) { td.className = "lead"; td.title = k === "penalties" ? "Most interruptions in the team" : "Most in the team"; }
+      tr.append(td);
+    }
+    body.append(tr);
+  }
+  const total = element("tr", "", "total"), label = element("th", "Whole team"); label.scope = "row"; total.append(label);
+  for (const [k] of cols) total.append(element("td", fmt(t[k] || 0)));
+  body.append(total);
+  scroll.append(table); box.append(scroll);
+  const notes = [fmt(t.matches || 0) + (t.matches === 1 ? " match" : " matches") + " in the bank",
+    fmt(t.named) + " of " + fmt(t.buzzes) + " buzzes name the player, so individual figures are minimums"];
+  if (t.bonuses) notes.push("bonuses " + fmt(t.bonuses_correct) + " of " + fmt(t.bonuses) + " (" + Math.round(100 * t.bonuses_correct / t.bonuses) + "%)");
+  box.append(element("p", notes.join(" · ") + ". Lost 5 points counts wrong buzzes before the question was finished.", "panel-note"));
+  return box;
+}
+
 function render() {
   list.replaceChildren();
   const text = searchKey(query.value.trim());
@@ -91,6 +130,7 @@ function render() {
     const grid = element("div", "", "portrait-grid");
     for (const player of players) grid.append(playerCard(player));
     section.append(heading, grid);
+    if (!text) { const stats = statsTable(players, players[0].competition + "|" + players[0].team); if (stats) section.append(stats); }
     list.append(section);
   }
 }

@@ -44,6 +44,11 @@ function render(p) {
   if (p.subject) bio.append(el("dt", "Subject"), el("dd", p.subject));
   if (p.degree) bio.append(el("dt", "Studying for"), el("dd", p.degree === "Undergraduate" ? "An undergraduate degree" : p.degree === "Research" ? "A research degree" : "A " + p.degree.toLowerCase().replace("master's", "master's degree")));
   if (!bio.children.length) bio.append(el("dt", "Profile"), el("dd", "No hometown or subject was recorded from the introduction."));
+  if (p.stats) {
+    const s = p.stats, n = x => new Intl.NumberFormat("en-GB").format(x);
+    bio.append(el("dt", "On the buzzer"), el("dd", n(s.starters) + " starters won from " + n(s.buzzes) + " named buzzes" +
+      (s.wrong ? ", " + n(s.wrong) + " wrong" : "") + (s.penalties ? ", lost 5 points " + n(s.penalties) + (s.penalties === 1 ? " time" : " times") : "")));
+  }
   const evidence = [p.origin_evidence, p.subject_evidence].filter((v, i, all) => v?.evidence && all.findIndex(x => x?.evidence === v.evidence) === i);
   const links = el("div", "", "player-links");
   for (const source of evidence) {

@@ -188,4 +188,24 @@ function renderExtras(){
   }
   if(!rows.length)list.append(el("li","No questions in this selection."));
 }
-select.addEventListener("change",()=>{render();renderExtras();});get("stat-kind").addEventListener("change",render);guessSelect.addEventListener("change",renderExtras);render();renderExtras();
+function renderPenalties(){
+  const competition=select.value, ts=globalThis.teamStats||{};
+  const teams=Object.entries(ts).map(([k,t])=>{const [c,name]=k.split("|");return {c,name,...t};})
+    .filter(t=>(!competition||t.c===competition) && t.penalties && t.matches)
+    .sort((a,b)=>b.penalties-a.penalties || a.matches-b.matches).slice(0,10);
+  const tl=get("penalty-teams");tl.replaceChildren();
+  for(const t of teams){
+    const li=el("li"),bar=el("div","","bar-track"),fill=el("i");fill.style.width=(100*t.penalties/teams[0].penalties)+"%";bar.append(fill);
+    li.append(link(t.name+" / "+t.c,"teams.html",{competition:t.c,team:t.name}),el("span",fmt(t.penalties)+" in "+fmt(t.matches)+(t.matches===1?" match":" matches")),bar);tl.append(li);
+  }
+  if(!teams.length)tl.append(el("li","No penalties recorded in this selection."));
+  const players=people.filter(p=>p.stats?.penalties && (!competition||p.competition===competition))
+    .sort((a,b)=>b.stats.penalties-a.stats.penalties || a.stats.buzzes-b.stats.buzzes).slice(0,10);
+  const pl=get("penalty-players");pl.replaceChildren();
+  for(const p of players){
+    const li=el("li"),bar=el("div","","bar-track"),fill=el("i");fill.style.width=(100*p.stats.penalties/players[0].stats.penalties)+"%";bar.append(fill);
+    li.append(playerLink(p),el("span",fmt(p.stats.penalties)+" of "+fmt(p.stats.buzzes)+" buzzes · "+p.team+" / "+p.competition),bar);pl.append(li);
+  }
+  if(!players.length)pl.append(el("li","No named interruptions in this selection."));
+}
+select.addEventListener("change",()=>{render();renderExtras();renderPenalties();});get("stat-kind").addEventListener("change",render);guessSelect.addEventListener("change",renderExtras);render();renderExtras();renderPenalties();
