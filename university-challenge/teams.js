@@ -107,6 +107,39 @@ function statsTable(players, key) {
   box.append(element("p", notes.join(" · ") + ". Lost 5 points counts wrong buzzes before the question was finished.", "panel-note"));
   return box;
 }
+// The team's matches in broadcast order, with scores and outcome from the results archive.
+function fixturesTable(competitionName, teamName) {
+  const fixtures = teamStats[competitionName + "|" + teamName]?.fixtures;
+  if (!fixtures?.length) return null;
+  const box = element("div", "", "team-stats team-fixtures");
+  box.append(element("h3", "Appearances and results"));
+  const scroll = element("div", "", "stats-scroll"), table = element("table");
+  const head = element("tr");
+  for (const label of ["Round", "Date", "Opponent", "Score", "Result", ""]) { const th = element("th", label); th.scope = "col"; head.append(th); }
+  table.createTHead().append(head);
+  const body = table.createTBody();
+  const dateFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  for (const f of fixtures) {
+    const tr = element("tr");
+    const round = element("th", f.stage + (f.episode ? " · ep. " + f.episode : "")); round.scope = "row";
+    const opponent = element("td");
+    const link = element("a", f.opponent);
+    link.href = "teams.html?" + new URLSearchParams({ competition: competitionName, team: f.opponent });
+    opponent.append(link);
+    const scored = f.score != null;
+    let result = scored ? (f.won ? "Won" : "Lost") : "Awaiting result";
+    if (f.tie_break) result += " (tie-break)";
+    if (f.highest_loser) result += " · highest loser, through";
+    const outcome = element("td", result, scored ? (f.won ? "won" : "lost") : "muted");
+    const watch = element("td");
+    if (f.video) { const a = element("a", "Questions"); a.href = "index.html?" + new URLSearchParams({ competition: competitionName, video: f.video }); watch.append(a); }
+    tr.append(round, element("td", f.date ? dateFmt.format(new Date(f.date + "T00:00:00Z")) : "–"), opponent,
+      element("td", scored ? fmt(f.score) + "–" + fmt(f.opponent_score) : "–"), outcome, watch);
+    body.append(tr);
+  }
+  scroll.append(table); box.append(scroll);
+  return box;
+}
 
 // Keep the address bar pointing at what is shown, so it can be shared.
 function syncUrl() {
@@ -146,7 +179,12 @@ function render() {
     const grid = element("div", "", "portrait-grid");
     for (const player of players) grid.append(playerCard(player));
     section.append(heading, grid);
-    if (!text) { const stats = statsTable(players, players[0].competition + "|" + players[0].team); if (stats) section.append(stats); }
+    if (!text) {
+      const fixtures = fixturesTable(players[0].competition, players[0].team);
+      if (fixtures) section.append(fixtures);
+      const stats = statsTable(players, players[0].competition + "|" + players[0].team);
+      if (stats) section.append(stats);
+    }
     list.append(section);
   }
 }

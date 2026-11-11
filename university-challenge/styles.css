@@ -369,3 +369,6 @@ body.christmas .series-only, body:not(.christmas) .christmas-only { display:none
 .round-grid .side .team-name { font-size:14px; padding:3px 0; }
 .following { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin:4px 0 0; padding:8px 12px; border-radius:8px; background:#e6e7f8; font-size:14px; }
 .following button { border:0; background:none; padding:0; text-decoration:underline; text-underline-offset:3px; color:var(--indigo); font-weight:650; }
+.team-fixtures td, .team-fixtures thead th { text-align: left; }
+.team-fixtures td.won { color:#2f6b3a; font-weight: 600; }
+.team-fixtures td.lost { color:#9a3f1d; }
