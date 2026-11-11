@@ -163,7 +163,8 @@ function renderQuestion() {
   showAttempts(clue.attempts);
   showRepeats(clue);
   showAnswer(false);
-  get("next-question").disabled = get("shuffle").disabled = state.matches.length < 2;
+  get("next-question").disabled = state.matches.length < 2;
+  get("shuffle").disabled = state.questions.length < 2;
 }
 
 function selectQuestion(index, focus = false) {
@@ -335,9 +336,18 @@ get("reset").addEventListener("click", () => {
   get("query").focus();
 });
 get("reveal").addEventListener("click", () => showAnswer(get("answer-panel").hidden));
+// Random question draws from the whole bank: clear any filters first, then pick a different question.
 get("shuffle").addEventListener("click", () => {
-  const offset = 1 + Math.floor(Math.random() * (state.matches.length - 1));
-  selectQuestion((state.index + offset) % state.matches.length);
+  const current = state.matches[state.index];
+  if (state.matches.length !== state.questions.length) {
+    get("filters").reset();
+    fillEpisodes();
+    applyFilters();
+  }
+  if (state.matches.length < 2) return;
+  let i;
+  do { i = Math.floor(Math.random() * state.matches.length); } while (state.matches[i] === current);
+  selectQuestion(i);
 });
 get("next-question").addEventListener("click", () => selectQuestion((state.index + 1) % state.matches.length));
 get("prev-page").addEventListener("click", () => { state.page--; renderPage(); });
