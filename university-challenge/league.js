@@ -111,7 +111,8 @@ function render() {
     for (const [key, , value, show] of cols) {
       if (key === "team") {
         const th = el("th"); th.scope = "row";
-        th.append(season ? link(r.team, "teams.html", { competition: season, team: r.team }) : el("span", r.team));
+        th.append(link(r.team, "university.html", { team: r.team }));
+        if (season) { const squad = link("squad", "teams.html", { competition: season, team: r.team }); squad.className = "muted"; th.append(" ", squad); }
         if (!season && r.titles) th.append(el("span", " " + "★".repeat(r.titles), "stars"));
         tr.append(th); continue;
       }
@@ -155,6 +156,66 @@ function render() {
   const ties = pool.filter(m => m.tie_break).length;
   if (ties) rec.append(el("dt", "Tie-breaks"), el("dd", fmt(ties) + " matches went to a tie-break question"));
 }
+// Charts below the tables cover every series, whatever table is chosen.
+function svg(tag, attrs, text) {
+  const n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  if (text != null) n.textContent = text;
+  return n;
+}
+function renderTrend() {
+  const series = comps.filter(c => !isXmas(c)).sort(order).map(c => {
+    const list = matches.filter(m => m.competition === c);
+    const mean = f => Math.round(list.reduce((s, m) => s + f(m), 0) / list.length);
+    return { c, n: list.length, win: mean(m => m.scores[m.winner]), lose: mean(m => m.scores[1 - m.winner]), rajan: Number(c.replace(/\D+/g, "")) >= 53 };
+  }).filter(s => s.n >= 5);
+  if (series.length < 2) return;
+  const W = 560, H = 280, left = 46, right = 14, top = 14, base = H - 26, peak = 260;
+  const x = i => left + (W - left - right) * i / (series.length - 1), y = v => base - (base - top) * v / peak;
+  const chart = svg("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Average winning and losing score by series" });
+  for (let v = 0; v <= peak; v += 50) chart.append(svg("line", { class: "grid", x1: left - 12, x2: W - right, y1: y(v), y2: y(v) }), svg("text", { x: left - 18, y: y(v) + 4, "text-anchor": "end" }, v));
+  const first = series.findIndex(s => s.rajan);
+  if (first > 0) { const ex = (x(first) + x(first - 1)) / 2; chart.append(svg("line", { class: "era", x1: ex, x2: ex, y1: top, y2: base }), svg("text", { x: ex + 5, y: top + 8 }, "Rajan")); }
+  series.forEach((s, i) => chart.append(svg("text", { x: x(i), y: H - 8, "text-anchor": "middle" }, s.c.replace("Series ", "S"))));
+  for (const [key, cls, label] of [["win", "s1", "Winning"], ["lose", "s2", "Losing"]]) {
+    chart.append(svg("path", { class: "line " + cls, d: series.map((s, i) => (i ? "L" : "M") + x(i) + "," + y(s[key])).join("") }));
+    series.forEach((s, i) => {
+      const dot = svg("circle", { class: cls, cx: x(i), cy: y(s[key]), r: 4.5, tabindex: "0" });
+      dot.append(svg("title", {}, s.c + ": " + label.toLowerCase() + " teams averaged " + s[key] + " across " + s.n + " matches"));
+      chart.append(dot);
+    });
+    const last = series[series.length - 1], firstS = series[0];
+    chart.append(svg("text", { x: x(0) + 8, y: y(firstS[key]) - 8 }, firstS[key]), svg("text", { x: x(series.length - 1), y: y(last[key]) - 10, "text-anchor": "end" }, last[key]));
+  }
+  get("score-trend").replaceChildren(chart);
+}
+function renderOxbridge() {
+  const side = t => /, Oxford$/.test(t) ? "O" : /, Cambridge$/.test(t) ? "C" : "";
+  const pool = matches.filter(m => !isXmas(m.competition));
+  const varsity = pool.filter(m => { const s = m.teams.map(side); return s.includes("O") && s.includes("C"); });
+  const ox = varsity.filter(m => side(m.teams[m.winner]) === "O").length, cam = varsity.length - ox;
+  const box = get("varsity"); box.replaceChildren();
+  const versus = el("div", "", "versus");
+  const a = el("div"); a.append(el("strong", String(ox)), el("span", "wins for Oxford colleges"));
+  const b = el("div"); b.append(el("strong", String(cam)), el("span", "wins for Cambridge colleges"));
+  versus.append(a, el("em", "v"), b);
+  const split = el("div", "", "split"); const i1 = el("i"), i2 = el("i"); i1.style.flex = String(ox); i2.style.flex = String(cam); split.append(i1, i2);
+  box.append(versus, split);
+  const record = keep => { let w = 0, n = 0; for (const m of pool) { const s = m.teams.map(side); if (Boolean(s[0]) === Boolean(s[1])) continue; const i = s[0] ? 0 : 1; if (!keep(s[i])) continue; n++; if (m.winner === i) w++; } return { w, n }; };
+  const dl = get("oxbridge"); dl.replaceChildren();
+  for (const [label, r] of [["Oxford v the rest", record(s => s === "O")], ["Cambridge v the rest", record(s => s === "C")]]) {
+    const dd = el("dd"); dd.append(el("strong", Math.round(100 * r.w / r.n) + "%"), "won " + fmt(r.w) + " of " + fmt(r.n) + " matches against other institutions");
+    dl.append(el("dt", label), dd);
+  }
+  const finals = pool.filter(m => m.stage === "Final");
+  const oxbridgeFinals = finals.filter(m => m.teams.some(side)).length;
+  const dd = el("dd"); dd.append(el("strong", oxbridgeFinals + " of " + finals.length), "finals featured at least one Oxford or Cambridge college");
+  dl.append(el("dt", "Finals"), dd);
+  const big = [...varsity].sort((p, q) => Math.abs(q.scores[0] - q.scores[1]) - Math.abs(p.scores[0] - p.scores[1]))[0];
+  if (big) { const d2 = el("dd"); const text = big.teams[big.winner] + " " + big.scores[big.winner] + "–" + big.scores[1 - big.winner] + " " + big.teams[1 - big.winner] + " · " + big.competition;
+    d2.append(big.video ? link(text, "index.html", { competition: big.competition, video: big.video }) : text); dl.append(el("dt", "Biggest varsity win"), d2); }
+}
+renderTrend(); renderOxbridge();
 view.addEventListener("change", () => { sortKey = null; history.replaceState(null, "", href("league.html", { competition: view.value })); render(); });
 xmas.addEventListener("change", render);
 render();

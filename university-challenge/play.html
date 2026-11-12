@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1247"><title>Play a round · University Challenge</title>
+  <meta name="description" content="Buzz in on real University Challenge starters as they are read out, take the bonuses, and compare your score with the teams on the night.">
+  <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="play.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the game</a>
+  <header class="mast"><div class="wrap mast-inner">
+    <a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="play.html" aria-current="page">Play</a><a href="study.html">Study</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  </div></header>
+  <main class="wrap" id="main">
+    <div class="heading"><h1>Your starter for ten</h1><p id="play-best" role="status"></p></div>
+    <p class="play-intro">Each starter is read out a word at a time, as it was on air. <strong>Buzz as soon as you know it.</strong> Get it right for 10 points and the bonuses that followed in the broadcast, worth 5 each. Buzz early and get it wrong, and you lose 5. You mark your own answers.</p>
+    <form class="setup" id="setup">
+      <label><span>Name on your nameplate</span><input id="play-name" maxlength="14" autocomplete="off" placeholder="Surname"></label>
+      <label><span>Subject</span><select id="play-category"><option value="">All subjects</option></select></label>
+      <label><span>Starters</span><select id="play-length"><option value="5">5 starters</option><option value="10" selected>10 starters</option><option value="20">20 starters</option></select></label>
+      <label><span>Reading speed</span><select id="play-speed"><option value="330">Unhurried</option><option value="240" selected>As broadcast</option><option value="150">Brisk</option></select></label>
+    </form>
+    <section class="stage" aria-labelledby="stage-kicker">
+      <div class="stage-top">
+        <div class="scoreboard"><span class="plate" id="nameplate">You</span><span class="score-box" id="score" aria-label="Score">0</span></div>
+        <span id="progress" role="status"></span>
+      </div>
+      <div class="stage-body">
+        <p class="stage-kicker" id="stage-kicker"></p>
+        <p class="set-intro" id="stage-intro" hidden></p>
+        <h2 id="stage-question" aria-live="off"></h2>
+        <div class="reveal" id="stage-reveal" hidden><h3>Answer</h3><p class="answer" id="stage-answer"></p><p class="night" id="stage-night"></p></div>
+        <div id="stage-results" hidden></div>
+        <div class="stage-actions" id="stage-actions"></div>
+      </div>
+    </section>
+    <p class="footnote">Questions come from the retained text questions in the bank, so picture and music rounds never appear. Your best scores are kept in this browser only.</p>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <p><strong>An unofficial fan project, made for fun.</strong> University Challenge is a BBC programme. The name, format, broadcasts and any trademarks belong to the BBC and their respective owners; this site is not affiliated with or endorsed by them.</p>
+    <p>Questions, answers, scores and player details were extracted automatically from captions and may be incomplete or wrong. <a href="about.html">How this was made</a>. <a href="#" data-analytics-settings>Cookie settings</a></p>
+  </div></footer>
+</body>
+</html>

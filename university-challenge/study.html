@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1247"><title>Study guide · University Challenge</title>
+  <meta name="description" content="The answers University Challenge comes back to most, subject by subject, with the clues that lead to them, how much of each subject they cover, and books to read.">
+  <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="study-books.js" defer></script><script src="topics.js" defer></script><script src="study.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the study guide</a>
+  <header class="mast"><div class="wrap mast-inner">
+    <a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="play.html">Play</a><a href="study.html" aria-current="page">Study</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  </div></header>
+  <main class="wrap" id="main">
+    <div class="heading"><h1>The canon</h1><p id="study-scope" role="status"></p></div>
+    <p class="play-intro" id="study-intro"></p>
+    <div class="stat-panels study-top">
+      <section><h2>How far a list gets you</h2>
+        <p>The bar is the share of each subject's questions answered by its 100 most frequent answers. The black tick is the share that falls in its 100 biggest themes, such as English monarchs or the planets. Choose a subject to open it.</p>
+        <ol id="study-subjects" class="bars"></ol></section>
+      <section><h2>Would past papers have helped?</h2>
+        <p>For each series, the share of its answers that had already come up in an earlier broadcast in the bank. Darker is the share that had come up three times or more.</p>
+        <ol id="study-past" class="bars"></ol>
+        <p class="panel-note">The bank holds more earlier questions for later series, which is part of why the share rises.</p></section>
+    </div>
+    <section aria-labelledby="subject-heading" id="subject">
+      <div class="study-head">
+        <h2 id="subject-heading" class="section-title"></h2>
+        <label class="round-select">Subject <select id="study-subject"></select></label>
+        <label class="round-select">List length <select id="study-size"><option value="50">50 topics</option><option value="100" selected>100 topics</option><option value="250">250 topics</option><option value="500">500 topics</option></select></label>
+      </div>
+      <div id="study-figures" class="figures"></div>
+      <div class="study-body">
+        <div>
+          <div class="view-switch study-switch" role="group" aria-label="List by">
+            <button type="button" data-view="themes" aria-pressed="true">Themes</button>
+            <button type="button" data-view="answers" aria-pressed="false">Answers</button>
+          </div>
+          <p class="panel-note" id="canon-note"></p>
+          <ol id="study-canon" class="canon"></ol>
+        </div>
+        <aside aria-labelledby="books-heading">
+          <h3 class="minor-title" id="books-heading">Books to read</h3>
+          <p class="panel-note" id="books-note"></p>
+          <ul id="study-books" class="books"></ul>
+        </aside>
+      </div>
+    </section>
+    <p class="footnote">Themes group questions that are about the same kind of thing, found by comparing the meaning of every question and its answer on a computer, so some groupings are rough and a theme's name is just its commonest answers. Answers are compared after dropping brackets, alternatives, articles and accents, so a few spellings of one answer may still be counted apart. Counts are of accepted answers, not clues: the same answer is often reached through different facts.</p>
+  </main>
+  <footer class="site-foot"><div class="wrap">
+    <p><strong>An unofficial fan project, made for fun.</strong> University Challenge is a BBC programme. The name, format, broadcasts and any trademarks belong to the BBC and their respective owners; this site is not affiliated with or endorsed by them.</p>
+    <p>Questions, answers, scores and player details were extracted automatically from captions and may be incomplete or wrong. <a href="about.html">How this was made</a>. <a href="#" data-analytics-settings>Cookie settings</a></p>
+  </div></footer>
+</body>
+</html>

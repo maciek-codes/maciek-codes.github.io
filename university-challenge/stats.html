@@ -2,15 +2,16 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#262651"><title>Statistics · University Challenge</title>
+  <meta name="theme-color" content="#0a1247"><title>Statistics · University Challenge</title>
   <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script>
-  <script src="rosters.js" defer></script><script src="stats.js" defer></script>
+  <script src="rosters.js" defer></script><script src="stats.js" defer></script><script src="insights.js" defer></script>
 <script src="/assets/analytics.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to statistics</a>
-  <header class="mast"><div class="wrap mast-inner"><a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
-    <nav aria-label="Main"><a href="index.html">Questions</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html" aria-current="page">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  <header class="mast"><div class="wrap mast-inner">
+    <a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="play.html">Play</a><a href="study.html">Study</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html" aria-current="page">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
   </div></header>
   <main class="wrap" id="main"><div class="heading"><h1>The scorebook</h1></div>
     <div class="stat-controls"><label>Competition <select id="season"></select></label><span id="scope" role="status"></span></div>
@@ -22,22 +23,13 @@
       <section><h2>Most-asked subjects</h2>
         <label class="round-select">Round type <select id="stat-kind"><option value="">Starters and bonuses</option><option value="starter">Starters</option><option value="bonus">Bonuses</option></select></label>
         <ol id="subjects" class="bars"></ol></section>
-      <section><h2>Composers</h2><p>Music questions naming each composer in the clue or accepted answer, plus music rounds where a recording was played and the accepted answer names the composer. Open a name to see examples.</p>
-        <p id="composer-scope" class="panel-note"></p>
-        <div id="composers" class="composer-list"></div></section>
+      <section><h2>What stumps the teams</h2><p>The share of bonuses answered correctly in each subject, easiest first, with how often a starter in that subject went unanswered.</p>
+        <ol id="hardest" class="bars"></ol></section>
     </div>
-    <div class="stat-panels">
-      <section><h2>Operas and musicals</h2><p>Titles given as the accepted answer when a question or a played excerpt asks for the opera or musical.</p>
-        <div id="operas" class="composer-list"></div></section>
-      <section><h2>Bands and artists</h2><p>Performers given as the accepted answer when a question or a played recording asks for the band, singer or artist.</p>
-        <div id="artists" class="composer-list"></div></section>
-    </div>
-    <div class="stat-panels">
-      <section><h2>What contestants study</h2><p>Subjects named in the players' own introductions. Each player counts once per competition.</p>
-        <p id="degree-summary" class="panel-note"></p><ol id="study" class="bars"></ol></section>
-      <section><h2>Where contestants come from</h2><p>Home places named in introductions, grouped by town. Places described as in London count as London.</p>
-        <ol id="hometowns" class="bars"></ol></section>
-    </div>
+    <section class="starter-leaders" aria-labelledby="years-heading"><h2 id="years-heading">The years they ask about</h2>
+      <p>Every four-digit year from 1500 onwards mentioned in a question, counted by decade. Hover or tap a column for its count.</p>
+      <div id="years" class="chart"></div>
+      <p id="top-years" class="panel-note"></p></section>
     <div class="stat-panels">
       <section><h2>Asked again</h2><p>The same or a very similar question in more than one broadcast: the same accepted answer reached through closely matching clues. Some are a recurring format rather than a word-for-word repeat. Open one to see each time it came up.</p>
         <p id="repeat-summary" class="panel-note"></p>
@@ -48,12 +40,37 @@
     </div>
     <section class="starter-leaders"><h2>First on the buzzer</h2><p>Players with the most named, correct starters in the selected broadcasts.</p><div id="starter-players" class="player-ranks"></div></section>
     <div class="stat-panels">
+      <section><h2>One-match hauls</h2><p>The most starters credited to one player in a single match. Only buzzes where the player is named count, so these are minimums.</p>
+        <ol id="hauls" class="bars"></ol></section>
+      <section class="rebounds"><h2>Rebounds</h2><p id="rebound-summary"></p><ol id="rebound-teams"></ol></section>
+    </div>
+    <div class="stat-panels">
       <section><h2>Too quick on the buzzer</h2><p>Teams that lost the most five-point penalties for interrupting a starter, with the number of their matches in the bank.</p>
         <ol id="penalty-teams" class="bars"></ol></section>
       <section><h2>Most interruptions by a player</h2><p>Named players who buzzed in early and wrong most often. Players are named for only some buzzes, so these are minimums.</p>
         <ol id="penalty-players" class="bars"></ol></section>
     </div>
-    <section class="rebounds"><h2>Rebounds</h2><p id="rebound-summary"></p><ol id="rebound-teams"></ol></section>
+    <div class="stat-panels">
+      <section><h2>What contestants study</h2><p>Subjects named in the players' own introductions. Each player counts once per competition.</p>
+        <p id="degree-summary" class="panel-note"></p><ol id="study" class="bars"></ol></section>
+      <section><h2>Where contestants come from</h2><p>Home places named in introductions, grouped by town. Places described as in London count as London.</p>
+        <ol id="hometowns" class="bars"></ol></section>
+    </div>
+    <div class="stat-panels">
+      <section><h2>Home turf</h2><p>Do contestants answer their own subject? The bar is the share of each group's named starters that fall in their own field. The black tick is the same share for everyone else.</p>
+        <ol id="home-turf" class="bars"></ol></section>
+      <section><h2>The most common first names</h2><p>First names as the players gave them in their introductions, so Tom and Thomas count separately.</p>
+        <ol id="first-names" class="bars"></ol></section>
+    </div>
+    <div class="stat-panels three">
+      <section><h2>Composers</h2><p>Music questions naming each composer in the clue or accepted answer, plus music rounds where a recording was played and the accepted answer names the composer. Open a name to see examples.</p>
+        <p id="composer-scope" class="panel-note"></p>
+        <div id="composers" class="composer-list"></div></section>
+      <section><h2>Operas and musicals</h2><p>Titles given as the accepted answer when a question or a played excerpt asks for the opera or musical.</p>
+        <div id="operas" class="composer-list"></div></section>
+      <section><h2>Bands and artists</h2><p>Performers given as the accepted answer when a question or a played recording asks for the band, singer or artist.</p>
+        <div id="artists" class="composer-list"></div></section>
+    </div>
     <p id="attribution" class="footnote"></p>
   </main>
   <footer class="site-foot"><div class="wrap">

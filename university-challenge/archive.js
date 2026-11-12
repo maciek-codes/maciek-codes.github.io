@@ -6,7 +6,7 @@ const number = new Intl.NumberFormat("en-GB");
 const date = new Intl.DateTimeFormat("en-GB", {
   day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
 });
-const state = { episodes: new Map(), questions: [], byKey: new Map(), byRepeat: new Map(), matches: [], index: 0, page: 0, picked: false };
+const state = { episodes: new Map(), questions: [], byKey: new Map(), byRepeat: new Map(), matches: [], index: 0, page: 0, picked: false, daily: null };
 // URL parameter <-> filter control.
 const FILTER_PARAMS = [["series", "competition"], ["episode", "video"], ["kind", "kind"], ["category", "category"], ["query", "q"]];
 
@@ -85,14 +85,27 @@ function showAttempts(attempts) {
   if (!Array.isArray(attempts)) return;
   for (const attempt of attempts) {
     if (!attempt || typeof attempt !== "object") continue;
-    const person = [text(attempt.team), text(attempt.player)].filter(Boolean).join(", ");
     const outcome = typeof attempt.correct === "boolean" ? (attempt.correct ? "correct" : "incorrect")
       : text(attempt.outcome) === "pass" ? "pass" : "";
     const response = text(attempt.answer);
-    const details = [response, outcome].filter(Boolean).join(" · ");
-    if (!person && !response) continue;
+    if (!text(attempt.team) && !text(attempt.player) && !response) continue;
+    // Whoever buzzed gets a nameplate, lit if they were right; the team follows in plain text.
     const item = document.createElement("li");
-    item.textContent = [person, details].filter(Boolean).join(" — ");
+    const who = text(attempt.player) || text(attempt.team);
+    if (who) {
+      const plate = document.createElement("span");
+      plate.className = "plate" + (outcome === "correct" ? " lit" : "");
+      plate.textContent = who;
+      item.append(plate);
+    }
+    if (text(attempt.player) && text(attempt.team)) item.append(text(attempt.team));
+    if (response) item.append("“" + response + "”");
+    if (outcome) {
+      const verdict = document.createElement("span");
+      verdict.className = "verdict " + outcome;
+      verdict.textContent = (outcome === "correct" ? "✓ " : outcome === "incorrect" ? "✗ " : "") + outcome + (attempt.penalty ? ", lost 5 for interrupting" : "");
+      item.append(verdict);
+    }
     list.append(item);
   }
 }
@@ -159,7 +172,7 @@ function renderQuestion() {
   get("set-intro").hidden = !clue.set_intro;
   get("set-intro").textContent = clue.set_intro ? "From the set: " + clue.set_intro : "";
   get("answer").textContent = clue.answer;
-  get("clue-info").textContent = [capitalize(text(clue.kind)), text(clue.category)].filter(Boolean).join(" / ");
+  get("clue-info").textContent = [clue === state.daily && !state.picked ? "Today's starter" : capitalize(text(clue.kind)), text(clue.category)].filter(Boolean).join(" / ");
   const info = get("episode-info");
   info.replaceChildren();
   if (seriesEpisode(episode)) info.append(seriesEpisode(episode), " · ");
@@ -369,6 +382,14 @@ async function loadBank() {
   // ?question=<key>, or the older ?video=<id>&at=<seconds>.
   const wanted = state.byKey.get(params.get("question"))
     || (params.has("at") ? state.questions.find(q => q.video_id === params.get("video") && q.start === Number(params.get("at"))) : null);
+  // With nothing asked for in the address, open on a starter that changes each day.
+  if (!wanted && ![...params.keys()].length) {
+    const starters = state.questions.filter(q => q.kind === "starter" && q.attempts?.some(a => a.outcome === "correct"));
+    const today = new Date();
+    const seed = today.getFullYear() * 372 + today.getMonth() * 31 + today.getDate();
+    state.daily = starters[(seed * 2654435761) % starters.length] || null;
+    if (state.daily) selectQuestion(state.matches.indexOf(state.daily), false, false);
+  }
   if (wanted) {
     if (!state.matches.includes(wanted)) {
       // The other parameters exclude it: show it within its own episode instead.
@@ -416,6 +437,15 @@ get("shuffle").addEventListener("click", () => {
   selectQuestion(i);
 });
 get("next-question").addEventListener("click", () => selectQuestion((state.index + 1) % state.matches.length));
+// Keys for practising without the mouse: space reveals, N moves on, R picks at random.
+document.addEventListener("keydown", event => {
+  if (event.metaKey || event.ctrlKey || event.altKey || get("results").hidden) return;
+  if (event.target.closest("input, select, textarea, button, a, summary")) return;
+  const key = event.key.toLowerCase();
+  if (key === " ") { event.preventDefault(); get("reveal").click(); }
+  else if (key === "n" || key === "arrowright") get("next-question").click();
+  else if (key === "r") get("shuffle").click();
+});
 get("prev-page").addEventListener("click", () => { state.page--; renderPage(); });
 get("next-page").addEventListener("click", () => { state.page++; renderPage(); });
 loadBank().catch(() => {

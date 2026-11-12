@@ -17,8 +17,8 @@ const counts = new Map(episodes.map(e => {
 const competitions = [...new Set(episodes.map(e => e.competition))];
 const hostOf = c => episodes.find(e => e.competition === c)?.host;
 
-// Sequential single-hue ramp from the empty-cell grey to the brand indigo.
-const LO = [238, 240, 246], HI = [48, 47, 97];
+// Sequential single-hue ramp from the empty-cell grey to the studio navy.
+const LO = [228, 232, 246], HI = [15, 28, 107];
 function shade(td, t) {
   if (!(t > 0)) { td.style.background = ""; td.classList.remove("dark"); return; }
   const k = 0.12 + 0.88 * Math.min(1, t);

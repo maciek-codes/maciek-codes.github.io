@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#262651">
+  <meta name="theme-color" content="#0a1247">
   <meta name="description" content="Practise University Challenge questions, reveal the answers and revisit the original episodes.">
   <title>Question bank · University Challenge</title>
   <link rel="stylesheet" href="styles.css">
@@ -13,16 +13,10 @@
 </head>
 <body>
   <a class="skip" href="#main">Skip to questions</a>
-  <header class="mast">
-    <div class="wrap mast-inner">
-      <a class="identity" href="#main"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
-      <nav aria-label="Main">
-        <a href="#main">Questions</a>
-        <a href="teams.html">Teams</a>
-        <a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a>
-      </nav>
-    </div>
-  </header>
+  <header class="mast"><div class="wrap mast-inner">
+    <a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html" aria-current="page">Questions</a><a href="play.html">Play</a><a href="study.html">Study</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  </div></header>
   <main id="main" class="wrap" tabindex="-1">
     <div class="heading"><h1>Question bank</h1><p id="total" aria-live="polite"></p></div>
     <div id="loading" role="status">Loading questions…</div>
@@ -47,7 +41,7 @@
             <div class="buzz-area">
               <button class="buzz-button" id="reveal" type="button" aria-expanded="false" aria-controls="answer-panel">
                 <span class="buzzer" aria-hidden="true"><i></i></span>
-                <span id="reveal-label">Reveal answer</span>
+                <span id="reveal-label">Reveal answer</span><kbd aria-hidden="true">space</kbd>
               </button>
             </div>
           </div>
@@ -58,7 +52,7 @@
           </div>
           <div class="desk-controls">
             <div class="source-info"><a id="source" target="_blank" rel="noopener noreferrer" hidden></a><a id="permalink" href="index.html" title="Link to this question">Copy link</a><span id="quality"></span></div>
-            <div class="practice-controls"><button type="button" id="shuffle">Random question</button><button type="button" id="next-question">Next question <span aria-hidden="true">→</span></button></div>
+            <div class="practice-controls"><a href="play.html">Play a round</a><button type="button" id="shuffle">Random question <kbd aria-hidden="true">R</kbd></button><button type="button" id="next-question">Next question <kbd aria-hidden="true">N</kbd></button></div>
           </div>
         </article>
         <section class="index" aria-labelledby="index-heading">

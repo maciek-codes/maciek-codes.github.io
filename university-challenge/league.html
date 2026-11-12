@@ -2,15 +2,16 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#262651"><title>League · University Challenge</title>
+  <meta name="theme-color" content="#0a1247"><title>League · University Challenge</title>
   <meta name="description" content="All-time and season league tables for University Challenge: wins, points for and against, point difference and records.">
   <link rel="stylesheet" href="styles.css"><script src="bank.js" defer></script><script src="league.js" defer></script>
 <script src="/assets/analytics.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to league tables</a>
-  <header class="mast"><div class="wrap mast-inner"><a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>University Challenge</a>
-    <nav aria-label="Main"><a href="index.html">Questions</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html" aria-current="page">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
+  <header class="mast"><div class="wrap mast-inner">
+    <a class="identity" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>University Challenge</a>
+    <nav aria-label="Main"><a href="index.html">Questions</a><a href="play.html">Play</a><a href="study.html">Study</a><a href="teams.html">Teams</a><a href="bracket.html">Brackets</a><a href="league.html" aria-current="page">League</a><a href="stats.html">Stats</a><a href="phrases.html">Catchphrases</a><a href="about.html">About</a></nav>
   </div></header>
   <main class="wrap" id="main">
     <div class="heading"><h1>The league</h1><p id="league-scope" role="status"></p></div>
@@ -33,6 +34,16 @@
       <section class="league-section"><h2>Records</h2>
         <p id="records-blurb">Single matches, for the table shown above. Select one to open its questions.</p>
         <dl id="records" class="records"></dl></section>
+    </div>
+    <div class="stat-panels">
+      <section class="league-section" aria-labelledby="trend-heading"><h2 id="trend-heading">Are the scores falling?</h2>
+        <p>The average winning and losing score in each series in the bank. Christmas specials are left out. The dashed line marks Amol Rajan's first series.</p>
+        <div id="score-trend" class="chart"></div>
+        <div class="legend"><span><i style="background:#2247d8"></i>Winning team</span><span><i style="background:#b96a00"></i>Losing team</span></div></section>
+      <section class="league-section" aria-labelledby="oxbridge-heading"><h2 id="oxbridge-heading">Oxford v Cambridge</h2>
+        <p>Every match in the bank between an Oxford college and a Cambridge college, and how the two universities' colleges fare against everyone else.</p>
+        <div id="varsity"></div>
+        <dl id="oxbridge" class="records"></dl></section>
     </div>
     <p class="footnote">Scores, rounds and qualifiers come from Sean Blanchflower's results archive, so they cover every match in each competition, including any missing from the question bank. Wins and losses count matches as played on the night; tie-breaks count as wins. In Series 38 (2008–09) Corpus Christi, Oxford won the final but were disqualified because a team member had left the college, and the title was awarded to Manchester.</p>
   </main>

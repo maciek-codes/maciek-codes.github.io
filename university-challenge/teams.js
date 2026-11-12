@@ -175,7 +175,10 @@ function render() {
   }
   for (const [label, players] of groups) {
     const section = element("section", "", "roster-section");
-    const heading = element("h2", label);
+    const heading = element("h2");
+    const home = element("a", players[0].team); home.href = "university.html?" + new URLSearchParams({ team: players[0].team });
+    home.title = "Every season for " + players[0].team;
+    heading.append(home, " / " + players[0].competition);
     const grid = element("div", "", "portrait-grid");
     for (const player of players) grid.append(playerCard(player));
     section.append(heading, grid);
